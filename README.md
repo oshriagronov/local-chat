@@ -1,7 +1,5 @@
 # local-chat
 
-# Open LLM
-
 local-chat is a simple and user-friendly chat interface designed to interact with open language models, specifically the Gemma3 models in 1B and 4B sizes.
 
 ## Features
