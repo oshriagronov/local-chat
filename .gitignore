@@ -4,4 +4,10 @@ __pycache__/
 archive/
 *.pyc
 .vscode/
-.DS_STORE
+.DS_Store
+venv/
+env/
+.venv/
+.env/
+lib/
+bin/
