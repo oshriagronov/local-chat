@@ -92,23 +92,19 @@ To get a local copy up and running follow these simple steps.
    through this link: https://ollama.com/download
 
 5. **install Gemma3 models**
-   The smaller model:
-
-```bash
-ollama run gemma3:1b
-```
-
-The "expert" model:
-
-```bash
-ollama run gemma3:4b-it-qat
-```
+  <br/>The smaller model:
+    ```bash
+      ollama run gemma3:1b
+    ```
+    _The "expert" model:_
+    ```bash
+    ollama run gemma3:4b-it-qat
+    ```
 
 6. **Run the app:**
-
-```bash
-python3 main.py
-```
+    ```bash
+    python3 main.py
+    ```
 
 ---
 
