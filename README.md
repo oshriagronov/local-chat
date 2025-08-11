@@ -34,6 +34,7 @@ Simple and user-friendly chat interface designed to interact with open language 
 
 ## Purpose
 
+tutorial
 The goal of this project is to make open language models accessible to end users who do not want to deal with command-line interfaces or coding. It provides a clean, easy-to-use GUI for chatting with models locally.
 
 ## Planned Upgrades
