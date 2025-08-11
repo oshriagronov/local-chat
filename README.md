@@ -55,6 +55,10 @@ With little bit of tweaking and installing, I plan to make the installation proc
 
 - `ollama`
 
+## Media
+
+  <img src="/example.jpg" alt="example of the chat interface">
+
 ## Getting Started
 
 To get a local copy up and running follow these simple steps.
@@ -113,4 +117,4 @@ python3 main.py
 
 ---
 
-Feel free to contribute or open issues if you have suggestions or encounter any problems!
+Feel free to chat with me about anything. I hope you enjoy my project!

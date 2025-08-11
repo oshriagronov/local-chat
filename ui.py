@@ -6,14 +6,16 @@ from config import COLORS, ASSETS, APP_TITLE, WINDOW_SIZE
 class ChatApp:
     def __init__(self, root):
         self.root = root
-        self.logic = ChatLogic()  # Initialize chat logic handler
+        # Initialize chat logic handler
+        self.logic = ChatLogic()
         self.root.title(APP_TITLE)
         self.root.geometry(WINDOW_SIZE)
-        icon = Image.open("./assets/app_icon.png")
-        tk_image = ImageTk.PhotoImage(icon)
-        self.root.iconphoto(True, tk_image)
-        ctk.set_appearance_mode("system") # Automatically use system light/dark mode
-        self.build_ui() # Build the user interface
+        # setting the icon for the app
+        self.root.iconphoto(True, ImageTk.PhotoImage(Image.open("./assets/app_icon.png")))
+        # Automatically use system light/dark mode
+        ctk.set_appearance_mode("system")
+        # Build the user interface
+        self.build_ui() 
 
     def build_ui(self):
         # Configure grid layout to allow resizing
