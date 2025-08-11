@@ -1,6 +1,14 @@
-# local-chat
+<br />
+<div align="center">
+  <a href="https://github.com/oshriagronov/local-chat">
+    <img src="assets/app_icon.png" alt="Logo" width="200" height="200">
+  </a>
 
-local-chat is a simple and user-friendly chat interface designed to interact with open language models, specifically the Gemma3 models in 1B and 4B sizes.
+<h3 align="center">LocalChat</h3>
+  <p align="center">
+    simple and user-friendly chat interface designed to interact with open language models, specifically the Gemma3 models in 1B and 4B sizes.
+  </p>
+</div>
 
 ## Features
 
@@ -13,8 +21,8 @@ local-chat is a simple and user-friendly chat interface designed to interact wit
 
 ## Hardware Recommendations
 
-- **Normal mode (1B model):** Requires at least 8GB of RAM.
-- **Expert mode (4B model):** Recommended 16GB of RAM for optimal performance.
+- **Normal mode (1B model):** Requires at least 8GB of RAM, can work without GPU.
+- **Expert mode (4B model):** Recommended 16GB of RAM and decent GPU(I will say 2GB Vram at the very lest) for optimal performance.
 
 ## Purpose
 
@@ -24,7 +32,6 @@ The goal of this project is to make open language models accessible to end users
 
 - Conversation history support
 - PDF file reading capability
-- Mobile version (?)
 - Modern UI redesign
 
 ## Technologies Used
@@ -37,6 +44,28 @@ The goal of this project is to make open language models accessible to end users
 ## Tools Utilized
 
 - `ollama`
+
+## Installation Guide
+
+Follow these steps to set up the project on your local machine:
+
+### 1. Install Python (if not installed)
+
+Make sure Python 3.8+ is installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
+
+### 2. Install pip (if not installed)
+
+Check if pip is installed:
+
+```bash
+pip --version
+```
+
+If not installed, try the following commands:
+
+```bash
+pip --version
+```
 
 ---
 
