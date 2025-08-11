@@ -34,14 +34,15 @@ Simple and user-friendly chat interface designed to interact with open language 
 
 ## Purpose
 
-tutorial
-The goal of this project is to make open language models accessible to end users who do not want to deal with command-line interfaces or coding. It provides a clean, easy-to-use GUI for chatting with models locally.
+The goal of this project is to make open language models accessible to end users who do not want to deal with command-line interfaces or coding. It provides a clean, easy-to-use GUI for chatting with models locally.<br/>
+With little bit of tweaking and installing, I plan to make the installation process easier in the future
 
 ## Planned Upgrades
 
 - Conversation history support
 - PDF file reading capability
 - Modern UI redesign
+- Easier installation process
 
 ## Technologies Used
 
@@ -67,8 +68,6 @@ To get a local copy up and running follow these simple steps.
 
 ### Installation
 
-- A pip-installable package will be provided once all core features are implemented. Until then, follow these steps to build Magnetron from source:\_
-
 ---
 
 1. **Clone and enter the Magnetron repository:**
@@ -91,7 +90,7 @@ To get a local copy up and running follow these simple steps.
    ```
 
 4. **install Ollama**
-   through this link: https://ollama.com/download/mac
+   through this link: https://ollama.com/download
 
 5. **install Gemma3 models**
    The smaller model:
@@ -108,9 +107,9 @@ ollama run gemma3:4b-it-qat
 
 6. **Run the app:**
 
-   ```bash
-   python3 main.py
-   ```
+```bash
+python3 main.py
+```
 
 ---
 
