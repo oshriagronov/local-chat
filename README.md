@@ -6,18 +6,26 @@
 
 <h3 align="center">LocalChat</h3>
   <p align="center">
-    simple and user-friendly chat interface designed to interact with open language models, specifically the Gemma3 models in 1B and 4B sizes.
+    Simple chat interface designed to interact with open language models.
   </p>
 </div>
 
-## Features
+## About
 
-- **Two Modes:**
-  - **Normal mode:** Chat with the 1B model for lightweight usage(Gemma3:1b).
-  - **Expert mode:** Chat with the more powerful 4B model(Gemma3:4b).
-- **Web Search (Expert mode only):** Allows the model to fetch answers from the web.
-- **Multi-language support:** Models support a wide range of languages.
-- **Local usage:** Run the models locally without sending data to any external service.
+Simple and user-friendly chat interface designed to interact with open language models, specifically the Gemma3 models in 1B and 4B sizes.
+
+### Key Features
+
+- **Normal mode**
+  → Chat with the 1B model for lightweight usage(Gemma3:1b).
+- **Expert mode**
+  → Chat with the more powerful 4B model(Gemma3:4b).
+- **Web Search (Expert mode only)**
+  → Allows the model to fetch answers from the web.
+- **Multi-language support**
+  → Models support a wide range of languages.
+- **Local usage**
+  → Run the models locally without sending data to any external service.
 
 ## Hardware Recommendations
 
@@ -39,33 +47,69 @@ The goal of this project is to make open language models accessible to end users
 - `custometkinter`
 - `tkinter`
 - `llm-axe`
-- `PIL` (Python Imaging Library)
+- `PIL`
 
 ## Tools Utilized
 
 - `ollama`
 
-## Installation Guide
+## Getting Started
 
-Follow these steps to set up the project on your local machine:
+To get a local copy up and running follow these simple steps.
 
-### 1. Install Python (if not installed)
+### Prerequisites
 
-Make sure Python 3.8+ is installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
+- Linux, MacOS or Windows
+- ollama
+- Python 3.6 or higher
+- tkinter
 
-### 2. Install pip (if not installed)
+### Installation
 
-Check if pip is installed:
+- A pip-installable package will be provided once all core features are implemented. Until then, follow these steps to build Magnetron from source:\_
+
+---
+
+1. **Clone and enter the Magnetron repository:**
+
+   ```bash
+   git clone https://github.com/oshriagronov/local-chat && cd local-chat
+   ```
+
+2. **Create and activate a virtual environment:**
+
+   ```bash
+   python3 -m venv .venv && source .venv/bin/activate
+   ```
+
+3. **Install LocalChat**  
+   _(Make sure tkinter installed – see [Prerequisites](#prerequisites)):_
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **install Ollama**
+   through this link: https://ollama.com/download/mac
+
+5. **install Gemma3 models**
+   The smaller model:
 
 ```bash
-pip --version
+ollama run gemma3:1b
 ```
 
-If not installed, try the following commands:
+The "expert" model:
 
 ```bash
-pip --version
+ollama run gemma3:4b-it-qat
 ```
+
+6. **Run the app:**
+
+   ```bash
+   python3 main.py
+   ```
 
 ---
 
