@@ -58,15 +58,15 @@ class ChatApp:
         self.entry.bind("<Return>", self.send_message)
         # Create buttons: send message, toggle web search, toggle expert mode
         self.send_button = self.create_button(self.input_frame, ASSETS["send"], self.send_message,col = 3)
-        self.web_search_button = self.create_button(self.input_frame, ASSETS["search"], self.toggle_web_search,col = 2, state="disabled")
+        self.web_search_button = self.create_button(self.input_frame, ASSETS["search"], self.toggle_web_search,col = 2, state="disabled", fg_color=COLORS["fg_disabled_button_color"])
         self.expert_button = self.create_button(self.input_frame, ASSETS["expert"], self.toggle_expert, col = 1)
 
-    def create_button(self,parent, img_path, command, col, state="normal"):
+    def create_button(self,parent, img_path, command, col, fg_color=COLORS["fg_button_color"],state="normal"):
         """
         Create a button with an icon image, custom colors, and bind it to a command.
         """
         img = Image.open(img_path).resize((40,40))
-        btn = ctk.CTkButton(parent,state=state, text=None, fg_color=COLORS["fg_button_color"], hover_color=COLORS["hover_button_color"], corner_radius=30 ,width=0, command=command,image=ctk.CTkImage(img))
+        btn = ctk.CTkButton(parent,state=state, text=None, fg_color=fg_color, hover_color=COLORS["hover_button_color"], corner_radius=30 ,width=0, command=command,image=ctk.CTkImage(img))
         btn.grid(row=0,column=col , pady= 5, padx=5)
         return btn
     
