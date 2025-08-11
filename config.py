@@ -18,5 +18,6 @@ COLORS = {
 ASSETS = {
     "send": "./assets/send_arrow_icon.png",
     "search": "./assets/web_search_icon.png",
-    "expert": "./assets/expert_icon.png"
+    "expert": "./assets/expert_icon.png",
+    "app_icon": "./assets/app_icon.png"
 }

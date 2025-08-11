@@ -11,7 +11,7 @@ class ChatApp:
         self.root.title(APP_TITLE)
         self.root.geometry(WINDOW_SIZE)
         # setting the icon for the app
-        self.root.iconphoto(True, ImageTk.PhotoImage(Image.open("./assets/app_icon.png")))
+        self.root.iconphoto(True, ImageTk.PhotoImage(Image.open(ASSETS["app_icon"])))
         # Automatically use system light/dark mode
         ctk.set_appearance_mode("system")
         # Build the user interface
