@@ -12,7 +12,7 @@
 
 ## About
 
-Simple and user-friendly chat interface designed to interact with open language models, specifically the Gemma3 models in 1B and 4B sizes.
+The goal of this project is to make open language models accessible to end users who do not want to deal with command-line interfaces or coding. It provides a clean, easy-to-use GUI for chatting with models locally.
 
 ### Key Features
 
@@ -31,11 +31,6 @@ Simple and user-friendly chat interface designed to interact with open language 
 
 - **Normal mode (1B model):** Requires at least 8GB of RAM, can work without GPU.
 - **Expert mode (4B model):** Recommended 16GB of RAM and decent GPU(I will say 2GB Vram at the very lest) for optimal performance.
-
-## Purpose
-
-The goal of this project is to make open language models accessible to end users who do not want to deal with command-line interfaces or coding. It provides a clean, easy-to-use GUI for chatting with models locally.<br/>
-With little bit of tweaking and installing, I plan to make the installation process easier in the future
 
 ## Planned Upgrades
 
