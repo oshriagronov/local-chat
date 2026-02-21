@@ -26,7 +26,7 @@ class ChatApp:
         self.root.grid_rowconfigure(1, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.chat_horizontal_padding = 8
-        self.message_min_width = 56
+        self.message_min_width = 72
         self.message_max_width_ratio = 0.82
         self.message_min_height = 18
         self.message_vertical_spacing = 2
@@ -101,7 +101,7 @@ class ChatApp:
 
         self.add_message(user_msg, "user")
         self.entry.delete(0, ctk.END)
-        self.pending_bot_label = self.add_message("Thinking...", "bot")
+        self.pending_bot_label = self.add_message("Thinking", "bot")
         self.request_in_flight = True
         self._set_send_button_state(enabled=False)
         worker = threading.Thread(
@@ -158,10 +158,10 @@ class ChatApp:
         )
         font = tkfont.Font(font=widget._textbox.cget("font"))
         lines = text.splitlines() if text else [""]
-        longest_line_width = max(font.measure(line) for line in lines)
-        # Add a safety buffer so short status texts (for example "Thinking...")
-        # do not get clipped on tighter UI settings.
-        content_width = longest_line_width + (self.message_text_pad_x * 2) + 14
+        # Measure with a trailing space to account for textbox internal padding.
+        longest_line_width = max(font.measure(f"{line} ") for line in lines)
+        # Keep extra headroom so short status texts do not wrap awkwardly.
+        content_width = longest_line_width + (self.message_text_pad_x * 2) + 22
         return min(max(content_width, self.message_min_width), max_width)
 
     def _resize_message_widget(self, widget):
