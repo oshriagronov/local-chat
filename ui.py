@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import Canvas, Frame, PhotoImage
+import tkinter.font as tkfont
 from PIL import Image, ImageTk
 import threading
 from logic import ChatLogic
@@ -24,6 +25,15 @@ class ChatApp:
         # Configure grid layout to allow resizing
         self.root.grid_rowconfigure(1, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
+        self.chat_horizontal_padding = 8
+        self.message_min_width = 56
+        self.message_max_width_ratio = 0.72
+        self.message_min_height = 18
+        self.message_vertical_spacing = 2
+        self.message_text_pad_x = 8
+        self.message_text_pad_y = 1
+        self.message_bottom_buffer = 6
+        self.message_font = ctk.CTkFont(size=13)
         # Create a canvas for displaying chat messages with dynamic background color
         self.chat_canvas = Canvas(self.root, bg=None if ctk.get_appearance_mode() == "Dark" else COLORS["light_mode_bg"], highlightthickness=0)
         # Vertical scrollbar for the chat canvas
@@ -36,13 +46,17 @@ class ChatApp:
         lambda e: self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
         )
         # Add the messages frame to the canvas as a window item
-        self.frame_window = self.chat_canvas.create_window((0, 0), window=self.messages_frame, anchor="nw")
+        self.frame_window = self.chat_canvas.create_window(
+            (self.chat_horizontal_padding, 0),
+            window=self.messages_frame,
+            anchor="nw"
+        )
         # Adjust the width of the messages frame to match the canvas width on resize
         self.chat_canvas.bind(
             "<Configure>",
             lambda e: self.chat_canvas.itemconfig(
                 self.frame_window,  # the window ID we store
-                width=e.width
+                width=max(e.width - (self.chat_horizontal_padding * 2), 1)
             )
         )
         # Connect scrollbar to canvas scrolling
@@ -107,7 +121,7 @@ class ChatApp:
 
     def _on_model_response(self, response: str):
         if self.pending_bot_label and self.pending_bot_label.winfo_exists():
-            self.pending_bot_label.configure(text=response)
+            self._set_message_text(self.pending_bot_label, response)
         else:
             self.add_message(response, "bot")
         self.pending_bot_label = None
@@ -129,6 +143,80 @@ class ChatApp:
             hover_color=COLORS["fg_disabled_button_color"]
         )
 
+    def _calculate_message_width(self, widget, text):
+        """
+        Calculate bubble width from content, capped by the available canvas width.
+        """
+        self.root.update_idletasks()
+        canvas_width = self.chat_canvas.winfo_width()
+        if canvas_width <= 1:
+            canvas_width = self.root.winfo_width()
+
+        max_width = max(
+            int(canvas_width * self.message_max_width_ratio),
+            self.message_min_width
+        )
+        font = tkfont.Font(font=widget._textbox.cget("font"))
+        lines = text.splitlines() if text else [""]
+        longest_line_width = max(font.measure(line) for line in lines)
+        # Add a safety buffer so short status texts (for example "Thinking...")
+        # do not get clipped on tighter UI settings.
+        content_width = longest_line_width + (self.message_text_pad_x * 2) + 14
+        return min(max(content_width, self.message_min_width), max_width)
+
+    def _resize_message_widget(self, widget):
+        """
+        Resize a message widget height to fit wrapped content while keeping it read-only.
+        """
+        self.root.update_idletasks()
+
+        font = tkfont.Font(font=widget._textbox.cget("font"))
+        line_height = font.metrics("linespace")
+        display_lines = 1
+        try:
+            tk_result = widget._textbox.tk.call(
+                widget._textbox._w,
+                "count",
+                "-displaylines",
+                "1.0",
+                "end-1c"
+            )
+            display_lines = int(tk_result) if tk_result else 1
+        except Exception:
+            display_lines = 1
+        content_height = max(display_lines, 1) * line_height
+
+        final_height = (
+            content_height
+            + (self.message_text_pad_y * 2)
+            + self.message_bottom_buffer
+        )
+        widget.configure(height=max(final_height, self.message_min_height))
+        self.root.update_idletasks()
+
+        # Safety pass: if Tk still reports hidden content, grow a few lines.
+        for _ in range(3):
+            _first, last = widget._textbox.yview()
+            if last >= 0.999:
+                break
+            final_height += line_height
+            widget.configure(height=final_height)
+            self.root.update_idletasks()
+
+        widget._textbox.yview_moveto(0)
+
+    def _set_message_text(self, widget, text):
+        """
+        Replace message content and keep the widget read-only for selection/copy.
+        """
+        widget.configure(state="normal")
+        widget.configure(width=self._calculate_message_width(widget, text))
+        widget.delete("1.0", "end")
+        widget.insert("1.0", text)
+        widget._textbox.tag_add("align", "1.0", "end")
+        self._resize_message_widget(widget)
+        widget.configure(state="disabled")
+
     def add_message(self, text, sender):
         """
         Add a message bubble to the chat area.
@@ -136,23 +224,47 @@ class ChatApp:
         """
         bubble_color = COLORS["user_bubble"] if sender == "user" else COLORS["bot_bubble"]
         text_color = "white"
-        justify = "right" if sender == "user" else "left"
-        label = ctk.CTkLabel(
+        message_widget = ctk.CTkTextbox(
             self.messages_frame,
-            text=text,
             fg_color=bubble_color,
             text_color=text_color,
             corner_radius=10,
-            wraplength=500,
-            anchor="w" if sender == "bot" else "e",
-            justify=justify,
-            pady=5,
-            padx=10
+            wrap="word",
+            width=self.message_min_width,
+            height=self.message_min_height,
+            border_width=0,
+            activate_scrollbars=False,
+            font=self.message_font
         )
-        label.pack(anchor="e" if sender=="user" else "w", pady=5, padx=(0, 5) if sender == "user" else (0,5))
+        message_widget._textbox.configure(
+            relief="flat",
+            borderwidth=0,
+            padx=self.message_text_pad_x,
+            pady=self.message_text_pad_y,
+            insertwidth=0,
+            spacing1=0,
+            spacing2=0,
+            spacing3=0
+        )
+        # Prevent per-bubble scrolling; the outer chat canvas handles scrolling.
+        message_widget._textbox.bind("<MouseWheel>", lambda _e: "break")
+        message_widget._textbox.bind("<Shift-MouseWheel>", lambda _e: "break")
+        message_widget._textbox.bind("<Button-4>", lambda _e: "break")
+        message_widget._textbox.bind("<Button-5>", lambda _e: "break")
+        if sender == "user":
+            message_widget._textbox.tag_configure("align", justify="right")
+        else:
+            message_widget._textbox.tag_configure("align", justify="left")
+        message_widget.pack(
+            anchor="e" if sender=="user" else "w",
+            pady=self.message_vertical_spacing,
+            padx=(0, 5)
+        )
+        # Size after packing so wrapping/line metrics use real geometry.
+        self._set_message_text(message_widget, text)
         # Auto-scroll to the bottom with a slight delay to ensure update
         self.root.after(50, lambda: self.chat_canvas.yview_moveto(1.0))
-        return label
+        return message_widget
 
     def toggle_web_search(self):
         """
