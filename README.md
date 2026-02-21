@@ -78,7 +78,7 @@ Notes:
 
 ---
 
-1. **Clone and enter the Magnetron repository:**
+1. **Clone and enter the LocalChat repository:**
 
    ```bash
    git clone https://github.com/oshriagronov/local-chat && cd local-chat
