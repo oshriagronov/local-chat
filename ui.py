@@ -87,9 +87,9 @@ class ChatApp:
 
         self.add_message(user_msg, "user")
         self.entry.delete(0, ctk.END)
-        self.pending_bot_label = self.add_message("thinking...", "bot")
+        self.pending_bot_label = self.add_message("Thinking...", "bot")
         self.request_in_flight = True
-        self.send_button.configure(state="disabled")
+        self._set_send_button_state(enabled=False)
         worker = threading.Thread(
             target=self._process_message_async,
             args=(user_msg,),
@@ -112,7 +112,22 @@ class ChatApp:
             self.add_message(response, "bot")
         self.pending_bot_label = None
         self.request_in_flight = False
-        self.send_button.configure(state="normal")
+        self._set_send_button_state(enabled=True)
+
+    def _set_send_button_state(self, enabled: bool):
+        if enabled:
+            self.send_button.configure(
+                state="normal",
+                fg_color=COLORS["fg_button_color"],
+                hover_color=COLORS["hover_button_color"]
+            )
+            return
+
+        self.send_button.configure(
+            state="disabled",
+            fg_color=COLORS["fg_disabled_button_color"],
+            hover_color=COLORS["fg_disabled_button_color"]
+        )
 
     def add_message(self, text, sender):
         """
