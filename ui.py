@@ -27,7 +27,7 @@ class ChatApp:
         self.root.grid_columnconfigure(0, weight=1)
         self.chat_horizontal_padding = 8
         self.message_min_width = 56
-        self.message_max_width_ratio = 0.72
+        self.message_max_width_ratio = 0.82
         self.message_min_height = 18
         self.message_vertical_spacing = 2
         self.message_text_pad_x = 8
@@ -251,10 +251,8 @@ class ChatApp:
         message_widget._textbox.bind("<Shift-MouseWheel>", lambda _e: "break")
         message_widget._textbox.bind("<Button-4>", lambda _e: "break")
         message_widget._textbox.bind("<Button-5>", lambda _e: "break")
-        if sender == "user":
-            message_widget._textbox.tag_configure("align", justify="right")
-        else:
-            message_widget._textbox.tag_configure("align", justify="left")
+        # Keep both user and bot text left-aligned for cleaner wrapped lines.
+        message_widget._textbox.tag_configure("align", justify="left")
         message_widget.pack(
             anchor="e" if sender=="user" else "w",
             pady=self.message_vertical_spacing,
