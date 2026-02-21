@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import Canvas, Frame, PhotoImage
 from PIL import Image, ImageTk
+import threading
 from logic import ChatLogic
 from config import COLORS, ASSETS, APP_TITLE, WINDOW_SIZE
 class ChatApp:
@@ -14,6 +15,8 @@ class ChatApp:
         self.root.iconphoto(True, ImageTk.PhotoImage(Image.open(ASSETS["app_icon"])))
         # Automatically use system light/dark mode
         ctk.set_appearance_mode("system")
+        self.request_in_flight = False
+        self.pending_bot_label = None
         # Build the user interface
         self.build_ui() 
 
@@ -75,12 +78,41 @@ class ChatApp:
         Called when the user presses Enter or clicks the send button.
         Sends the user's message to the logic handler and displays both user and bot messages.
         """
+        if self.request_in_flight:
+            return "break"
+
         user_msg = self.entry.get().strip()
         if not user_msg:
-            return
+            return "break"
+
         self.add_message(user_msg, "user")
         self.entry.delete(0, ctk.END)
-        self.add_message(self.logic.process_message(user_msg), "bot")
+        self.pending_bot_label = self.add_message("thinking...", "bot")
+        self.request_in_flight = True
+        self.send_button.configure(state="disabled")
+        worker = threading.Thread(
+            target=self._process_message_async,
+            args=(user_msg,),
+            daemon=True
+        )
+        worker.start()
+        return "break"
+
+    def _process_message_async(self, message: str):
+        try:
+            response = self.logic.process_message(message)
+        except Exception as exc:
+            response = f"Error: {exc}"
+        self.root.after(0, lambda: self._on_model_response(response))
+
+    def _on_model_response(self, response: str):
+        if self.pending_bot_label and self.pending_bot_label.winfo_exists():
+            self.pending_bot_label.configure(text=response)
+        else:
+            self.add_message(response, "bot")
+        self.pending_bot_label = None
+        self.request_in_flight = False
+        self.send_button.configure(state="normal")
 
     def add_message(self, text, sender):
         """
@@ -105,6 +137,7 @@ class ChatApp:
         label.pack(anchor="e" if sender=="user" else "w", pady=5, padx=(0, 5) if sender == "user" else (0,5))
         # Auto-scroll to the bottom with a slight delay to ensure update
         self.root.after(50, lambda: self.chat_canvas.yview_moveto(1.0))
+        return label
 
     def toggle_web_search(self):
         """
