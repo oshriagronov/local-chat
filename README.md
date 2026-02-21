@@ -36,8 +36,7 @@ The goal of this project is to make open language models accessible to end users
 
 - Conversation history support
 - PDF file reading capability
-- Modern UI redesign
-- Easier installation process
+- Refine UI(copy message button for example)
 
 ## Technologies Used
 
@@ -64,6 +63,7 @@ Prebuilt executables are published on GitHub Releases for Windows, macOS, and Li
 Download the file for your OS from the latest release and run it.
 
 Notes:
+
 - You still need Ollama installed and the Gemma3 models pulled (see steps 4-5 below).
 - On macOS, you may need to right-click the app/executable and choose **Open** the first time.
 
@@ -101,19 +101,22 @@ Notes:
    through this link: https://ollama.com/download
 
 5. **install Gemma3 models**
-  <br/>The smaller model:
-    ```bash
-      ollama run gemma3:1b
-    ```
-    _The "expert" model:_
-    ```bash
-    ollama run gemma3:4b-it-qat
-    ```
+   <br/>The smaller model:
+
+   ```bash
+     ollama run gemma3:1b
+   ```
+
+   _The "expert" model:_
+
+   ```bash
+   ollama run gemma3:4b-it-qat
+   ```
 
 6. **Run the app:**
-    ```bash
-    python3 main.py
-    ```
+   ```bash
+   python3 main.py
+   ```
 
 ---
 
@@ -126,6 +129,7 @@ bash scripts/build_local.sh
 ```
 
 What it does:
+
 - Uses Python 3.12 (or 3.11 if 3.12 is unavailable)
 - Creates `.venv`
 - Installs dependencies and PyInstaller
@@ -142,6 +146,7 @@ bash scripts/build_local.sh windows
 ```
 
 Note for macOS:
+
 - The selected Python must include `tkinter` (`_tkinter`).
 - If Finder blocks opening, use right-click `LocalChat.app` -> `Open` on first launch.
 
@@ -167,25 +172,3 @@ On macOS, if you want a double-clickable `.app` bundle, remove `--onefile`:
 ```bash
 pyinstaller --noconfirm --clean --windowed --name LocalChat --collect-data llm_axe --add-data "assets:assets" main.py
 ```
-
-## Build Executables Automatically on GitHub Releases
-
-This repo includes a GitHub Actions workflow at:
-`.github/workflows/build-release.yml`
-
-It builds Windows, macOS, and Linux executables when:
-- You push a tag like `v1.0.0`
-
-Quick publish flow:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-After the workflow finishes, your release gets:
-- `LocalChat-windows.exe`
-- `LocalChat-macOS.zip` (contains `LocalChat.app`)
-- `LocalChat-linux-x86_64.AppImage`
-
-Feel free to chat with me about anything. I hope you enjoy my project!
