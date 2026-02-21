@@ -1,0 +1,113 @@
+name: Build Releases
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --only-binary=:all: -r requirements.txt
+          pip install pyinstaller
+
+      - name: Verify tkinter
+        run: |
+          python -c "import tkinter; print('tkinter OK')"
+
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          pyinstaller --noconfirm --clean --windowed --name LocalChat --collect-data llm_axe --add-data "assets:assets" main.py
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          pyinstaller --noconfirm --clean --windowed --onefile --name LocalChat --collect-data llm_axe --add-data "assets;assets" main.py
+
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          pyinstaller --noconfirm --clean --windowed --name LocalChat --collect-data llm_axe --add-data "assets:assets" main.py
+          codesign --force --deep --sign - dist/LocalChat.app
+
+      - name: Prepare release assets (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p release AppDir/usr/bin
+          cp -R dist/LocalChat/* AppDir/usr/bin/
+          cat > AppDir/AppRun <<'EOF'
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "$0")")"
+          exec "$HERE/usr/bin/LocalChat" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+          cat > AppDir/LocalChat.desktop <<'EOF'
+          [Desktop Entry]
+          Type=Application
+          Name=LocalChat
+          Exec=LocalChat
+          Icon=LocalChat
+          Categories=Utility;
+          Terminal=false
+          EOF
+          cp assets/app_icon.png AppDir/LocalChat.png
+          curl -L -o appimagetool.AppImage https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool.AppImage
+          APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 ./appimagetool.AppImage AppDir release/LocalChat-linux-x86_64.AppImage
+
+      - name: Prepare release assets (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          if (!(Test-Path release)) { New-Item -ItemType Directory -Path release | Out-Null }
+          copy dist\LocalChat.exe release\LocalChat-windows.exe
+
+      - name: Prepare release assets (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p release
+          ditto -c -k --sequesterRsrc --keepParent dist/LocalChat.app release/LocalChat-macOS.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LocalChat-${{ runner.os }}
+          path: release/*
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*

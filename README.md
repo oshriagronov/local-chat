@@ -58,11 +58,20 @@ The goal of this project is to make open language models accessible to end users
 
 To get a local copy up and running follow these simple steps.
 
+## Download Executable (No Python Needed)
+
+Prebuilt executables are published on GitHub Releases for Windows, macOS, and Linux.
+Download the file for your OS from the latest release and run it.
+
+Notes:
+- You still need Ollama installed and the Gemma3 models pulled (see steps 4-5 below).
+- On macOS, you may need to right-click the app/executable and choose **Open** the first time.
+
 ### Prerequisites
 
 - Linux, MacOS or Windows
 - ollama
-- Python 3.6 or higher
+- Python 3.11 or 3.12 (recommended)
 - tkinter
 
 ### Installation
@@ -107,5 +116,76 @@ To get a local copy up and running follow these simple steps.
     ```
 
 ---
+
+## Build Executable Locally
+
+Use the helper script (recommended):
+
+```bash
+bash scripts/build_local.sh
+```
+
+What it does:
+- Uses Python 3.12 (or 3.11 if 3.12 is unavailable)
+- Creates `.venv`
+- Installs dependencies and PyInstaller
+- Builds `dist/LocalChat.app` on macOS
+- Builds `dist/LocalChat-linux-x86_64.AppImage` on Linux
+- Builds `dist/LocalChat.exe` on Windows (when run under Windows shell)
+
+Optional target override:
+
+```bash
+bash scripts/build_local.sh mac
+bash scripts/build_local.sh linux-appimage
+bash scripts/build_local.sh windows
+```
+
+Note for macOS:
+- The selected Python must include `tkinter` (`_tkinter`).
+- If Finder blocks opening, use right-click `LocalChat.app` -> `Open` on first launch.
+
+Manual PyInstaller command (if needed):
+
+```bash
+python3 -m pip install --upgrade pip
+pip install --only-binary=:all: -r requirements.txt
+pip install pyinstaller
+pyinstaller --noconfirm --clean --windowed --onefile --name LocalChat --collect-data llm_axe --add-data "assets:assets" main.py
+```
+
+On Windows, replace the `--add-data` separator with `;`:
+
+```bash
+pyinstaller --noconfirm --clean --windowed --onefile --name LocalChat --collect-data llm_axe --add-data "assets;assets" main.py
+```
+
+The executable will be in `dist/`.
+
+On macOS, if you want a double-clickable `.app` bundle, remove `--onefile`:
+
+```bash
+pyinstaller --noconfirm --clean --windowed --name LocalChat --collect-data llm_axe --add-data "assets:assets" main.py
+```
+
+## Build Executables Automatically on GitHub Releases
+
+This repo includes a GitHub Actions workflow at:
+`.github/workflows/build-release.yml`
+
+It builds Windows, macOS, and Linux executables when:
+- You push a tag like `v1.0.0`
+
+Quick publish flow:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+After the workflow finishes, your release gets:
+- `LocalChat-windows.exe`
+- `LocalChat-macOS.zip` (contains `LocalChat.app`)
+- `LocalChat-linux-x86_64.AppImage`
 
 Feel free to chat with me about anything. I hope you enjoy my project!
